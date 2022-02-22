@@ -1,0 +1,51 @@
+body {
+    overflow-y:hidden;
+}
+/*
+ * hover rect
+ */
+
+.hoverRect {
+    fill:rgb(79, 80, 80);
+    stroke-width: 10;
+    stroke: rgb(0, 0, 0);
+}
+
+
+
+/*
+ * filter options
+ */
+.invisible {
+    visibility: hidden;
+    display: none;
+  }
+
+/*
+ * arrow css
+ */
+
+.arrow {
+    marker-end: url("#mark-end-arrow");
+    stroke: rgb(79, 80, 80);
+}
+
+/*
+* ColorPicker
+*/
+
+.picker {
+    border-radius: 5px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    -webkit-transition: all linear .2s;
+    -moz-transition: all linear .2s;
+    -ms-transition: all linear .2s;
+    -o-transition: all linear .2s;
+    transition: all linear .2s;
+    border: thin solid #eee;
+}
+.picker:hover {
+    transform: scale(1.1);
+}

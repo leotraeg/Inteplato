@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="Leonard Traeger">
+
+	<title>Inteplato</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="./bootstrap5/css/bootstrap.min.css" rel="stylesheet" />
+
+	<!-- Custom styles for this template -->
+	<link href="./assets/css/dashboard.css" rel="stylesheet">
+	<link href="./assets/css/svg.css" rel="stylesheet">
+
+	<!-- Fonts     -->
+	<link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
+
+	<!-- Colorpicker-->
+	<link rel="stylesheet" href="./assets/css/colorPick.css">
+
+	<!-- Favicons -->
+
+	<!-- Theme copied from https://getbootstrap.com/docs/4.1/examples/dashboard/#  -->
+
+</head>
+
+<body>
+
+
+	<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+		<a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">
+			<h4>Inteplato</h2>
+		</a>
+		<ul class="navbar-nav px-3">
+			<li class="nav-item text-nowrap">
+				<a class="nav-link" href="#">Sign out</a>
+			</li>
+		</ul>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<nav class="col-md-2 d-none d-md-block bg-light sidebar">
+				<div class="sidebar-sticky">
+					<h6
+						class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+						<span>Schema universe options</span>
+					</h6>
+					<ul class="nav flex-column">
+						<li id="insertschema" class="nav-item" data-bs-toggle="modal"
+							data-bs-target="#insertSchemaModal">
+							<a class="nav-link" href="#">
+								<span data-feather="plus-circle"></span>
+								Upload new schema
+							</a>
+						</li>
+						<li id="clearschema" class="nav-item">
+							<a class="nav-link" href="#">
+								<span data-feather="x"></span>
+								Delete schema
+							</a>
+						</li>
+
+					</ul>
+					<h6
+						class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-1 text-muted">
+						<span>Global schema options</span>
+						<div class="picker float-end" id="colorpickerglobalconcept"></div>
+					</h6>
+					<ul class="nav flex-column">
+						<li id="newglobaltableconcept" class="nav-item">
+							<a class="nav-link" href="#">
+								<span data-feather="plus-circle"></span>
+								New global table
+							</a>
+						</li>
+						<li id="newglobalattributeconcept" class="nav-item">
+							<a class="nav-link" href="#">
+								<span data-feather="plus-circle"></span>
+								New global attribute
+							</a>
+						</li>
+					</ul>
+					<h6
+						class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+						<span>Concept filter options</span>
+					</h6>
+					<ul class="nav flex-column mb-2">
+						<li class="nav-item">
+							<a class="nav-link">
+								<div class="form-check form-switch">
+									<label class="form-check-label" for="tablesfilter">Tables</label>
+									<input class="form-check-input" type="checkbox" id="tablesfilter" checked>
+								</div>
+							</a>
+							<a class="nav-link">
+								<div class="form-check form-switch">
+									<label class="form-check-label" for="attributesfilter">Attributes</label>
+									<input class="form-check-input" type="checkbox" id="attributesfilter" checked>
+								</div>
+							</a>
+						</li>
+					</ul>
+					<h6
+						class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+						<span>Path filter options</span>
+						<a class="d-flex align-items-center text-muted" href="#">
+
+						</a>
+					</h6>
+					<ul class="nav flex-column mb-2">
+						<li class="nav-item">
+							<a class="nav-link">
+								<div class="form-check form-switch">
+									<label class="form-check-label" for="tabtoattrfilter">Table to attributes</label>
+									<input class="form-check-input" type="checkbox" id="tabtoattrfilter" checked>
+								</div>
+							</a>
+							<a class="nav-link">
+								<div class="form-check form-switch">
+									<label class="form-check-label" for="globaltolocalfilter">Global to local</label>
+									<input class="form-check-input" type="checkbox" id="globaltolocalfilter" checked>
+								</div>
+							</a>
+						</li>
+
+					</ul>
+				</div>
+			</nav>
+			<main role="main" class="col-md-9 ms-auto col-lg-10 px-4">
+				<div
+					class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1 class="h2">Dashboard</h1>
+					<div class="btn-toolbar mb-2 mb-md-0">
+						<div class="btn-group mr-2">
+							<button id="info" class="btn btn-sm btn-outline-secondary">
+								Info
+								<span data-feather="info"></span>
+							</button>
+						</div>
+						<div class="btn-group mr-2">
+							<button class="btn btn-sm btn-outline-secondary">
+								Save
+								<span data-feather="save"></span>
+							</button>
+						</div>
+						<div class="btn-group mr-2">
+							<button class="btn btn-sm btn-outline-secondary">
+								Options
+								<span data-feather="tool"></span>
+							</button>
+						</div>
+						<div class="btn-group mr-2">
+							<button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"data-bs-target="#previewConceptList">
+								Concept List
+								<span data-feather="eye"></span>
+							</button>
+						</div>
+						<div class="btn-group mr-2">
+							<button id="localMatcher" class="btn btn-sm btn-outline-secondary">
+								Local Max Matcher
+								<span data-feather="life-buoy"></span>
+							</button>
+						</div>
+						<div class="btn-group mr-2">
+							<button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+								data-bs-target="#previewMetadata">
+								Metadata Table
+								<span data-feather="eye"></span>
+							</button>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- MODAL InsertSchemaModal -->
+				<div class="modal fade" id="insertSchemaModal" tabindex="-1" aria-labelledby="modelinsertschema"
+					aria-hidden="true">
+					<div class="modal-dialog modal-xl modal-dialog-centered">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modelinsertschema">Upload new XML-DDL schema</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<div role="tabpanel">
+									<ul class="nav nav-tabs" id="myTab" role="tablist">
+										<li class="nav-item" role="presentation">
+											<button class="nav-link active" id="xml1" data-bs-toggle="tab"
+												data-bs-target="#xml1tar" type="button" role="tab"
+												aria-controls="xml1tar" aria-selected="true">Local schema 1</button>
+										</li>
+										<li class="nav-item" role="presentation">
+											<button class="nav-link" id="xml2" data-bs-toggle="tab"
+												data-bs-target="#xml2tar" type="button" role="tab"
+												aria-controls="xml2tar" aria-selected="false">Local schema 2</button>
+										</li>
+										<li class="nav-item" role="presentation">
+											<button class="nav-link" id="global" data-bs-toggle="tab"
+												data-bs-target="#globaltar" type="button" role="tab"
+												aria-controls="globaltar" aria-selected="false">Global schema</button>
+										</li>
+									</ul>
+									<div class="tab-content" id="myTabContent">
+										<div class="tab-pane fade show active" id="xml1tar" role="tabpanel"
+											aria-labelledby="xml1">
+											<div class="form-floating">
+												<div class="picker" id="colorpickermodal1"></div>
+												<textarea class="form-control" id="modalschema1"
+													style="height: 500px"></textarea>
+											</div>
+										</div>
+										<div class="tab-pane fade" id="xml2tar" role="tabpanel" aria-labelledby="xml2">
+											<div class="form-floating">
+												<div class="picker" id="colorpickermodal2"></div>
+												<textarea class="form-control" id="modalschema2"
+													style="height: 500px"></textarea>
+											</div>
+										</div>
+										<div class="tab-pane fade" id="globaltar" role="tabpanel"
+											aria-labelledby="global">
+											<div class="form-floating">
+												Choose color on main screen
+												<textarea class="form-control" id="modalschemaglobal"
+													style="height: 500px"></textarea>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">Close</button>
+									<button id="importDDL" type="button" class="btn btn-primary">Import XML-DDLs into Concept List</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- MODAL preview Concept List .modal-fullscreen -->
+				<div class="modal fade" id="previewConceptList" tabindex="-1" aria-labelledby="modalconceptlist" aria-hidden="true">
+					<div class="modal-dialog modal-xl modal-dialog-centered">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modalconceptlist">Concept List</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="Close"></button>
+							</div>
+							<div class="modal-body table-responsive">
+								<div id="conceptlistalerts"></div>
+								<table id="conceptListTable" class="table table-striped table-hover table-sm ">
+									<thead>
+										<tr>
+											<th scope="col"></th>
+											<th scope="col">Id</th>
+											<th scope="col">Concept Name</th>
+											<th scope="col">Manipulated Name</th>
+											<th scope="col">Synonyms</th>
+											<th scope="col">Parent #</th>
+											<th scope="col">Type</th>
+											<th scope="col">Schema</th>
+											<th scope="col">Data Type</th>
+											<th scope="col">Constraint</th>
+											<th scope="col">Constraint ref #</th>
+											<th scope="col">Global #</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">Close</button>
+									<button id="drawSelectedConcepts" type="button" class="btn btn-primary">Draw
+										Selected Concepts</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- MODAL preview Concept List .modal-fullscreen -->
+				<div class="modal fade" id="previewMetadata" tabindex="-1" aria-labelledby="modalmetadata"
+					aria-hidden="true">
+					<div class="modal-dialog modal-xl modal-dialog-centered">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modalmetadata">Metadata Table</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="Close"></button>
+							</div>
+							<div class="modal-body table-responsive">
+								<table id="metadataTable" class="table table-striped table-hover table-sm ">
+									<thead>
+										<tr>
+											<th scope="col">#</th>
+											<th scope="col">Global Concept Name</th>
+											<th scope="col">Transformation rule for schema 1</th>
+											<th scope="col">Transformation rule for schema 2</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- MODAL local concept finder -->
+				<div class="modal fade" id="previewlocalconceptfinder" tabindex="-1"
+					aria-labelledby="modallocalconceptfinder" aria-hidden="true">
+					<div class="modal-dialog modal-xl modal-dialog-centered">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modallocalconceptfinder">Local concept finder</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="Close"></button>
+							</div>
+							<div class="modal-body table-responsive">
+								<div id="localconceptfinderalerts"></div>
+								<p class="h6" id="localconceptfinderheader"></p>
+								<table id="localConceptFinderMatches" class="table table-striped table-hover table-sm ">
+									<thead>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row ">
+					<div id="schemuniv" class="col-md-10">
+						<div id="dashboardalerts"></div>
+						<div class="border border-3 bg-light">
+							<div class="d-flex justify-content-center">
+								<p class="h5">Schema Universe</p>
+							</div>
+							<div class="float-end">
+								<b>+</b> <input id="schema1slider" type="range" min="1" max="200" value="50"
+									class="slider" id="myRange"> <b>-</b>
+							</div>
+						</div>
+						</br>
+
+						<div id="schema1" class="d-flex border border-1 bg-light">
+						</div>
+					</div>
+
+					<div id="meta" class="col-md-2">
+						<div id="conceptmeta" class="border border-3 bg-light">
+							<div class="d-flex justify-content-center">
+								<p class="h5">Concept Detailview</p>
+							</div>
+
+							<table class="table table-striped table-hover table-responsive">
+								<tbody>
+									<tr style="display:none;">
+										<th scope="row">ID</th>
+										<td><input id="conceptid" class="form-control" type="text" value="" disabled>
+										</td>
+									</tr>
+									<tr>
+										<th scope="row">Name</th>
+										<td><input id="conceptname" class="form-control" type="text" value="" disabled>
+										</td>
+									</tr>
+									<tr>
+										<th scope="row">Type</th>
+										<td><input id="concepttype" class="form-control" type="text" value="" disabled>
+										</td>
+									</tr>
+									<tr>
+										<th scope="row">Data Type</th>
+										<td><input id="conceptdatatype" class="form-control" type="text" value=""
+												disabled>
+										</td>
+									</tr>
+									<tr>
+										<th scope="row">Constraint</th>
+										<td><input id="conceptconstraint" class="form-control" type="text" value=""
+												disabled>
+										</td>
+									</tr>
+									<tr>
+										<th scope="row">Table Source</th>
+										<td><input id="concepttablesource" class="form-control" type="text" value=""
+												disabled></td>
+									</tr>
+									<tr>
+										<th scope="row">Schema Source</th>
+										<td><input id="conceptschemasource" class="form-control input-group-sm"
+												type="text" value="" disabled></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						</br>
+
+						<div id="globalconceptmeta" class="border border-3 bg-light invisible">
+							<div class="d-flex justify-content-center bg-white">
+								<p class="h5" style="display: inline-block">Global-to-local relationships</p>
+								<button id="localconceptfinderbutton" class="btn btn-sm btn-outline-secondary"
+									data-bs-toggle="modal" data-bs-target="#previewlocalconceptfinder">
+									<span data-feather="life-buoy"></span>
+								</button>
+								<button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+									data-bs-target="#edittransformation">
+									<span data-feather="edit"></span>
+								</button>
+							</div>
+							<p class="h6 text-start">Local Schema 1</p>
+							<ul id="globalrel1" class="list-group"></ul>
+							</br>
+
+							<p class="h6">Local Schema 2</p>
+							<ul id="globalrel2" class="list-group"></ul>
+						</div>
+					</div>
+
+					<!-- MODAL Transformation Rules -->
+					<div class="modal fade" id="edittransformation" tabindex="-1" aria-labelledby="modaltransformation"
+						aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="modaltransformation">Transformation rules for local
+										concepts</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal"
+										aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<p class="h6" id="edittransformationheader"></p>
+									<div class="d-flex">
+										<div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist"
+											aria-orientation="vertical">
+											<button class="nav-link active" id="tab-transform-local-1"
+												data-bs-toggle="pill" data-bs-target="#transform-local-1" type="button"
+												role="tab" aria-controls="transform-local-1" aria-selected="true">Local
+												Schema 1</button>
+											<button class="nav-link" id="tab-transform-local-2" data-bs-toggle="pill"
+												data-bs-target="#transform-local-2" type="button" role="tab"
+												aria-controls="transform-local-2" aria-selected="false">Local Schema
+												2</button>
+										</div>
+										<div class="tab-content flex-fill" id="sqlstrings">
+											<div class="tab-pane fade show active" id="transform-local-1"
+												role="tabpanel" aria-labelledby="tab-transform-local-1">
+												<textarea id="textareatransform1" class="form-control"
+													style="height: 350px"></textarea>
+											</div>
+											<div class="tab-pane fade flex-fill" id="transform-local-2" role="tabpanel"
+												aria-labelledby="tab-transform-local-2">
+												<textarea id="textareatransform2" class="form-control"
+													style="height: 350px"></textarea>
+											</div>
+										</div>
+										<div class="list-group" id="sqlelementlist">
+										</div>
+										<div class="list-group" id="sqlrelatedconcepts">
+										</div>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">Close</button>
+									<button id="modalsavetransformation" type="button" class="btn btn-primary">Save
+										Transformation Rules</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+			</main>
+		</div>
+	</div>
+
+
+	<script src="./bootstrap5/js/bootstrap.min.js"></script>
+	<script src="./assets/js/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+	<script src="./assets/js/colorPick.js"></script>
+
+
+	<script src="./assets/js/conceptConstructor.js"></script>
+	<script src="./assets/js/algorithm.js"></script>
+
+	<script>
+		$(function () {
+			//MODAL and SAMPLE XML
+			var xml1;
+			$.get('./dboneschema.txt', function (data) {
+				xml1 = data;
+			});
+
+			var xml2;
+			$.get('./dbtwoschema.txt', function (data) {
+				xml2 = data;
+			});
+
+			var xml4;
+			$.get('./dbfourschema.txt', function (data) {
+				xml4 = data;
+			});
+
+			var xmlglobal;
+			$.get('./dbglobalschemac.txt', function (data) {
+				xmlglobal = data;
+			});
+
+			// COLOR PICKER
+			$("#colorpickermodal1").colorPick({
+				'initialColor': '#A93226',
+				'allowVertical': false,
+				'palette': ["#A93226", "#884EA0", "#2471A3", "#17A589", "#229954", "#CA6F1E"],
+				'onColorSelected': function () {
+					this.element.css({ 'backgroundColor': this.color, 'color': this.color });
+				}
+			});
+			$("#colorpickermodal2").colorPick({
+				'initialColor': '#229954',
+				'allowVertical': false,
+				'palette': ["#A93226", "#884EA0", "#2471A3", "#17A589", "#229954", "#CA6F1E"],
+				'onColorSelected': function () {
+					this.element.css({ 'backgroundColor': this.color, 'color': this.color });
+				}
+			});
+
+			$("#colorpickerglobalconcept").colorPick({
+				'initialColor': '#884EA0',
+				'allowVertical': true,
+				'palette': ["#A93226", "#884EA0", "#2471A3", "#17A589", "#229954", "#CA6F1E"],
+				'onColorSelected': function () {
+					this.element.css({ 'backgroundColor': this.color, 'color': this.color });
+				}
+			});
+
+			// EVENTHANDLERS + EVENTS FOR conceptG ELEMENTS 
+			$('#conceptname').on('input', function () {
+				var concept = concept_id_to_concept($('#conceptid').val());
+				concept.set_drawn_concept_text($('#conceptname').val().toUpperCase());
+				concept.name = $('#conceptname').val().toUpperCase();
+				concept.manipulated_name = $('#conceptname').val().toUpperCase();
+				concept.synonyms_retrieved = false;
+				concept.synonyms = [];
+			});
+
+
+			$.fn.addGlobalTableConcept = function () {
+				var concept_schema_obj = conceptList.find(concept => concept.name === 'global');
+				if (concept_schema_obj === undefined) {
+					concept_schema_obj = new concept('global');
+				};
+
+				concept_schema_obj.add_child_concept("GlobalTable").draw_concept(svg);
+			};
+
+			$.fn.addGlobalAttributeConcept = function () {
+				var global_concept = concept_id_to_concept($("#conceptid").val());
+				if (global_concept === undefined ||
+					global_concept.schema != 'global' ||
+					global_concept.type != 'table') {
+					$.fn.push_alert("dashboardalerts", "warning",
+						"Select a global table or create a new one to append a global attribute to it!");
+				} else {
+					global_concept.add_child_concept("GlobalAttribute").draw_concept(svg);
+				}
+			};
+
+			$.fn.XMLtoConceptList = function (inputXML, schemaName) {
+				// check for existing schema
+				var concept_schema_obj = conceptList.find(concept => concept.name === schemaName);
+				if (concept_schema_obj === undefined) {
+					concept_schema_obj = new concept(schemaName);
+				};
+
+				//Parse the given XML
+				var xmlDoc = $.parseXML(inputXML);
+				var $xml = $(xmlDoc);
+
+				// Find table 
+				var $table = $xml.find("TABLE");
+
+				// add tables and columns in a first step
+				$table.each(function () {
+					var table_name = $(this).find('NAME').first().text();
+					let table_concept = new concept(table_name, schemaName);
+
+					var $attribute = $(this).find("COL_LIST").first().children("COL_LIST_ITEM");
+
+					$attribute.each(function () {
+						var attribute_name = $(this).find('NAME').first().text();
+						var attribute_data_type = $(this).find('DATATYPE').first().text();
+						table_concept.add_child_concept(attribute_name, attribute_data_type);
+					});
+				});
+
+				// add constraints in a second step
+				$table.each(function () {
+					var table_name = $(this).find('NAME').first().text();
+					var $primarykey = $(this).find("PRIMARY_KEY_CONSTRAINT_LIST").first().children("PRIMARY_KEY_CONSTRAINT_LIST_ITEM");
+
+					$primarykey.each(function () {
+						var primarykey_name = $(this).find('COL_LIST').find('COL_LIST_ITEM').find('NAME').text();
+						conceptList.find(concept => concept.name === primarykey_name && concept.parent_name === table_name).
+							set_constraint('PRIMARY KEY');
+					});
+				});
+
+				$table.each(function () {
+					var table_name = $(this).find('NAME').first().text();
+					var $foreignkey = $(this).find("FOREIGN_KEY_CONSTRAINT_LIST").children("FOREIGN_KEY_CONSTRAINT_LIST_ITEM");
+
+					$foreignkey.each(function () {
+						var foreignkey_name = $(this).find('COL_LIST').find('COL_LIST_ITEM').find('NAME').first().text();
+						var foreignkey_table_ref = $(this).find('REFERENCES').find('NAME').first().text();
+						var foreignkey_attribute_ref = $(this).find('REFERENCES').find('COL_LIST').find('COL_LIST_ITEM').find('NAME').text();
+
+						//find in conceptList the primary and foreign key attribute concept
+						var foreignkey_concept = conceptList.find(concept => concept.name === foreignkey_name &&
+							concept.parent_name === table_name);
+						var primarykey_concept = conceptList.find(concept => concept.name === foreignkey_name &&
+							concept.constraint_name === 'PRIMARY KEY');
+
+						if (foreignkey_concept != undefined && primarykey_concept != undefined) {
+							foreignkey_concept.set_constraint('FOREIGN KEY', primarykey_concept.id);
+						} else if (foreignkey_concept != undefined && primarykey_concept == undefined) {
+							foreignkey_concept.set_constraint('FOREIGN KEY', 'N/A');
+						};
+
+					});
+				});
+			};
+
+			//ON SHOW.BS.MODAL EVENTS
+
+			// (re)load the conceptList when Modal is opened
+			$("#previewConceptList").on('show.bs.modal', function () {
+				$('#conceptlistalerts').empty();
+				let numberconceptswithoutsynonymsretrieved = conceptList.filter(concept => concept.synonyms_retrieved == false && concept.type != 'schema');
+				if (numberconceptswithoutsynonymsretrieved.length > 0) {
+					$.fn.push_alert('conceptlistalerts', 'warning', 'No synonyms were retrieved for ' + numberconceptswithoutsynonymsretrieved.length +
+						' concept(s). Do you want to retrieve synonyms for them? Inteplato could find more matches based on similiar synonyms.',
+						'setsynonymsallbutton', 'success', 'Retrieve synonyms');
+				};
+				conceptList.forEach(conceptObj => conceptObj.modify_concept_name()); //filter DB1_ ...
+				$.fn.generateConceptList();
+			});
+
+			$.fn.generateConceptList = function () {
+				var tbody = $('#conceptListTable tbody'),
+					props = ["draw", "id", "name", "manipulated_name", "synonyms", "parent_id", "type",
+						"schema", "data_type", "constraint_name", "constraint_ref_id", "global_id"];
+
+				tbody.empty();
+
+				$.each(conceptList, function (i, concept) {
+					var tr = $('<tr>');
+					$.each(props, function (i, prop) {
+						if (prop === "draw") {
+							if (concept.type != 'schema') {
+								if (concept[prop] == true || concept[prop] == 'true') {
+									$('<td>').html("<input class='form-check-input' type='checkbox' checked value='" + concept[prop] +
+										"' onchange=this.setAttribute('value',(this.getAttribute('value')==='false'?true:false));concept_id_to_concept('" + concept.id + "').set_draw(this.getAttribute('value'));>").appendTo(tr);
+								} else {
+									$('<td>').html("<input class='form-check-input' type='checkbox' value='" + concept[prop] +
+										"' onchange=this.setAttribute('value',(this.getAttribute('value')==='false'?true:false));concept_id_to_concept('" + concept.id + "').set_draw(this.getAttribute('value'));>").appendTo(tr);
+								}
+							} else {
+								$('<td>').html(' ').appendTo(tr);
+							}
+						} else if (prop === "manipulated_name") {
+							if (concept.type != 'schema') {
+								$('<td>').html("<input class='form-control form-control-sm conceptmannameinput' type='text' value='" + concept.manipulated_name +
+									"' data-conceptid='" + concept.id + "'>").appendTo(tr);
+							} else {
+								$('<td>').html(' ').appendTo(tr);
+							}
+						} else if (prop === 'synonyms') {
+							if (concept.type != 'schema') {
+								if (concept.synonyms_retrieved === true) {
+									$('<td>').html("<button type='button' class='btn btn-sm conceptsynonymsbtn btn-outline-success' data-conceptid='" + concept.id + "' data-bs-toggle='tooltip' data-bs-html='true' title='" + concept.synonyms + "'><span data-feather='tag'></span></button>").appendTo(tr);
+								} else {
+									$('<td>').html("<button type='button' class='btn btn-sm conceptsynonymsbtn' data-conceptid='" + concept.id + "' data-bs-toggle='tooltip' data-bs-html='true' title='" + concept.synonyms + "'><span data-feather='tag'></span></button>").appendTo(tr);
+								}
+							} else {
+								$('<td>').html(' ').appendTo(tr);
+							}
+						} else {
+							$('<td>').html(concept[prop]).appendTo(tr);
+						}
+					});
+					tbody.append(tr);
+				});
+
+				//reload button feather icons appended dynamically
+				feather.replace()
+			};
+
+			// Local Matcher algorithm
+			$("#localMatcher").on('click', function () {
+				let conceptsS = get_all_schemata_concepts();
+				let conceptsGT = get_all_global_table_concepts();
+				conceptsGT.forEach(function (conceptGT) {
+					let conceptGTmatrixConceptsLT = conceptGT.tablelocalconceptfinder();
+					conceptsS.forEach(function (conceptS) {
+						let conceptGTmatrixconceptSConceptsLT = conceptGTmatrixConceptsLT.
+							filter(conceptSConceptsLT => conceptSConceptsLT.schema == conceptS.name);
+						let conceptLTMax = conceptGTmatrixconceptSConceptsLT[0] //total score sorted arr -> take first
+						let conceptLTMaxScnd = conceptGTmatrixconceptSConceptsLT[1]
+						if ((conceptLTMaxScnd.total_score / conceptLTMax.total_score) < 0.975) {
+							concept_id_to_concept(conceptLTMax.id).set_global_concept(conceptGT.id);
+						} else {
+							console.log(conceptGT.id + ' has similarly scored local concepts. Human support required for ' + conceptS.name);
+						}
+					});
+
+					let conceptsGA = conceptGT.get_all_children_concepts();
+					if (conceptsGA != undefined) {
+						conceptsGA.forEach(function (conceptGA) {
+							let conceptGAmatrixConceptsLA = conceptGA.attributelocalconceptfinder(true);
+							conceptsS.forEach(function (conceptS) {
+								let conceptGAmatrixConceptSConceptsLA = conceptGAmatrixConceptsLA.
+									filter(conceptSConceptsLA => conceptSConceptsLA.schema == conceptS.name);
+								let conceptLAMax = conceptGAmatrixConceptSConceptsLA[0] //total score sorted arr -> take first 
+								let conceptLAMaxScnd = conceptGAmatrixConceptSConceptsLA[1]
+								if ((conceptLAMaxScnd.total_score / conceptLAMax.total_score) < 0.975) {
+									concept_id_to_concept(conceptLAMax.id).set_global_concept(conceptGA.id);
+								} else {
+									console.log(conceptGA.id + ' has similarly scored local concepts. Human support required for ' + conceptS.name);
+								}
+							})
+						})
+					}
+					//let conceptLTMax = Math.max.apply(Math, conceptGTmatrixconceptSConceptsLT.map(function(conceptLT) {
+					//	 return conceptLT.total_score; 
+					//}))
+				});
+			});
+
+			// (re)load the Metadata table when Modal is opened
+			$("#previewMetadata").on('show.bs.modal', function () {
+				$.fn.generateMetadataTable();
+			});
+
+			$.fn.generateMetadataTable = function () {
+				var tbody = $('#metadataTable tbody'),
+					props = ["id", "name", "transformation1", "transformation2"];
+
+				tbody.empty();
+
+				$.each(conceptList.filter(conceptObj => conceptObj.schema === "global"), function (i, concept) {
+					var tr = $('<tr>');
+					$.each(props, function (i, prop) {
+						$('<td>').html(concept[prop]).appendTo(tr);
+					});
+					tbody.append(tr);
+				});
+			};
+
+			let sqltablecards = ['SELECT', '*', 'FROM', 'INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'FULL JOIN', 'UNION', 'ON', '='];
+			let sqlattrcards = [" || ' ' || ", "CONCAT", "(", ")", "AS"];
+			// (re)load the transformation screen when Modal is opened 
+			$("#edittransformation").on('show.bs.modal', function () {
+				$("#textareatransform1").empty();
+				$("#textareatransform2").empty();
+				$("#edittransformationheader").empty();
+				$("#sqlelementlist").empty();
+				$("#sqlrelatedconcepts").empty();
+
+				let global_concept = concept_id_to_concept($('#conceptid').val());
+				$("#edittransformationheader").html("Global " + global_concept.type + ' ' + global_concept.name + ' is represented as: ');
+
+				$("#textareatransform1").val(global_concept.transformation1);
+				$("#textareatransform2").val(global_concept.transformation2);
+
+				conceptList.filter(conceptsConnected => conceptsConnected.global_id.includes(global_concept.id)).
+					forEach(sqlrelconcept => $("#sqlrelatedconcepts").append("<a href='#' class='list-group-item list-group-item-action'>" +
+						sqlrelconcept.name + "</a>"));
+
+				if (global_concept.type === 'table') {
+					sqltablecards.forEach(sqlcard => $("#sqlelementlist").append("<a href='#' class='list-group-item list-group-item-action'>" +
+						sqlcard + "</a>"));
+				} else if (global_concept.type === 'attribute') {
+					sqlattrcards.forEach(sqlcard => $("#sqlelementlist").append("<a href='#' class='list-group-item list-group-item-action'>" +
+						sqlcard + "</a>"));
+				};
+			});
+
+			// (re)load the previewlocalconceptfinder screen when Modal is opened  
+			$("#previewlocalconceptfinder").on('show.bs.modal', function () {
+				$('#localconceptfinderalerts').empty();
+				let numberconceptswithoutsynonymsretrieved = conceptList.filter(concept => concept.synonyms_retrieved == false && concept.type != 'schema');
+				if (numberconceptswithoutsynonymsretrieved.length > 0) {
+					$.fn.push_alert('localconceptfinderalerts', 'warning', 'No synonyms were retrieved for ' + numberconceptswithoutsynonymsretrieved.length +
+						' concept(s). Do you want to retrieve synonyms for them? Inteplato could find more matches based on similiar synonyms.',
+						'setsynonymsallbutton', 'success', 'Retrieve synonyms');
+				};
+
+				let global_concept = concept_id_to_concept($('#conceptid').val());
+
+				let header = $('#localconceptfinderheader');
+				header.empty();
+				let headline = 'Mapping suggestions for global <b>' + global_concept.type + ' ' + global_concept.name + ' (' + global_concept.id + ')</b>:</br>';
+				let description = 'Retrieved Synonyms (' + global_concept.synonyms.length + ') for manipulated name <b>' + global_concept.manipulated_name + '</b> are <b>' + global_concept.synonyms + '</b></br>';
+				header.append(headline + description);
+
+				let thead = $('#localConceptFinderMatches thead');
+				let tbody = $('#localConceptFinderMatches tbody');
+				thead.empty();
+				tbody.empty();
+				let props = [];
+
+				//table specific
+				if (global_concept.type == 'table') {
+					//content to be compared to for tables
+					props = ['id', 'name', 'manipulated_name', 'schema', 'synonyms', 'fuzzy search',  '#datatypes', 'tot score table', 'tot score attribute', 'tot score', 'set'];
+					//'#attributes', '#foreignkeys',
+					union = global_concept.tablelocalconceptfinder();
+
+				} // attribute specific
+				else if (global_concept.type == 'attribute') {
+					//content to be compared to for attributes
+					props = ['id', 'name', 'manipulated_name', 'schema', 'synonyms', 'fuzzy search', 'datatype', 'constraint', 'tot score attribute', 'tot score table', 'tot score', 'set'];
+
+					union = global_concept.attributelocalconceptfinder(true);
+				};
+
+
+				//prepare dom table columns depending on concept being table or attribute
+				let informationColumns = '<tr>';
+				props.forEach(function (prop) {
+					informationColumns = informationColumns + '<th scope="col">' + prop + '</th>';
+				});
+				informationColumns = informationColumns + '</tr>';
+				thead.append(informationColumns);
+
+				//insert into table				
+				union.forEach(function (concept_score) {
+					let concept = concept_id_to_concept(concept_score.id);
+					var tr = $('<tr>');
+					$.each(props, function (i, prop) {
+						if (prop === "synonyms") {
+							$('<td>').html(concept_score.synonyms_score).appendTo(tr);
+						} else if (prop === "fuzzy search") {
+							$('<td>').html(concept_score.fuzzy_score).appendTo(tr);
+						} else if (prop === "#attributes") {
+							$('<td>').html(concept_score.compare_attributes).appendTo(tr);
+						} else if (prop === "#foreignkeys") {
+							$('<td>').html(concept_score.compare_foreignkeys).appendTo(tr);
+						} else if (prop === "#datatypes") {
+							$('<td>').html(concept_score.compare_datatypes).appendTo(tr);
+						} else if (prop === "datatype") {
+							$('<td>').html(concept_score.same_datatype).appendTo(tr);
+						} else if (prop === "constraint") {
+							$('<td>').html(concept_score.same_constraint).appendTo(tr);
+						} else if (prop === 'set') {
+							if (concept.global_id.includes(global_concept.id)) {
+								$('<td>').html("<button type='button' class='btn btn-sm setglobalconceptbtn btn-outline-success' data-conceptid='" + concept.id + "' title='Click to set " + concept.id + " as local concept.'><span data-feather='mouse-pointer'></span></button>").appendTo(tr);
+							} else {
+								$('<td>').html("<button type='button' class='btn btn-sm setglobalconceptbtn' data-conceptid='" + concept.id + "' title='Click to set " + concept.id + " as local concept.'><span data-feather='mouse-pointer'></span></button>").appendTo(tr);
+							}
+						} else if (prop === "tot score attribute") {
+							$('<td>').html(concept_score.total_score_attribute).appendTo(tr);
+						} else if (prop === "tot score table") {
+							$('<td>').html(concept_score.total_score_table).appendTo(tr);
+						} else if (prop === "tot score") {
+							$('<td>').html(concept_score.total_score).appendTo(tr);
+						} else {
+							$('<td>').html(concept[prop]).appendTo(tr);
+						}
+					});
+					tbody.append(tr);
+				});
+
+
+				//reload button feather icons appended dynamically
+				feather.replace();
+			});
+
+
+			//MODAL EVENTS
+			$("#insertschema").click(function () {
+				//$("#modalschema1").empty(); //automatic quality test
+				//$("#modalschema1").val(xml1); //automatic quality test
+				//$("#modalschema2").empty(); //automatic quality test
+				//$("#modalschema2").val(xml4); //automatic quality test
+				//$("#modalschemaglobal").empty(); //automatic quality test
+				//$("#modalschemaglobal").val(xmlglobal); //automatic quality test
+			});
+			$("#clearschema").click(function () {
+				svg.selectAll('path').remove();
+				svg.selectAll('g').remove();
+			});
+			$("#importDDL").click(function () {
+				$.fn.XMLtoConceptList($("#modalschemaglobal").val(), "global");
+				$.fn.XMLtoConceptList($("#modalschema1").val(), "SCHEMA1");
+				$.fn.XMLtoConceptList($("#modalschema2").val(), "SCHEMA2");
+				
+			});
+
+			$("#drawSelectedConcepts").click(function () {
+				conceptList.filter(concept => concept.type == 'table' && concept.type != 'schema' && concept.is_drawn == false && concept.draw == true).
+					forEach(function (concept) {
+						concept.draw_concept(svg);
+						concept.get_all_children_concepts().forEach(function (children_concept) {
+							children_concept.draw_concept(svg);
+						})
+					});
+			});
+
+			$('#conceptdatatype').on('input', function () {
+				var concept = concept_id_to_concept($('#conceptid').val());
+				concept.data_type = $('#conceptdatatype').val().toUpperCase();
+			});
+
+			$('#conceptconstraint').on('input', function () {
+				var concept = concept_id_to_concept($('#conceptid').val());
+				concept.constraint_name = $('#conceptconstraint').val().toUpperCase();
+				concept.check_constraint_color();
+			});
+
+			$('#conceptListTable tbody').on('click', 'button.conceptsynonymsbtn', function () {
+				let concept = concept_id_to_concept($(this).attr('data-conceptid'));
+				concept.set_synonyms();
+
+				let that = this;
+				setTimeout(function () {
+					$(that).attr('title', concept.synonyms);
+					$(that).addClass('btn-outline-success');
+				}, 300);
+			});
+
+			$('#localConceptFinderMatches tbody').on('click', 'button.setglobalconceptbtn', function () {
+				let concept = concept_id_to_concept($(this).attr('data-conceptid'));
+				concept.set_global_concept($('#conceptid').val());
+
+				//refresh conceptmeta of global concept
+				concept_id_to_concept($('#conceptid').val()).update_conceptmeta();
+
+				//make button green if connect
+				$(this).addClass('btn-outline-success');
+			});
+
+			$('#conceptListTable tbody').on('input', 'input.conceptmannameinput', function () {
+				let concept = concept_id_to_concept($(this).attr('data-conceptid'));
+				concept.manipulated_name = this.value;
+				concept.synonyms_retrieved = false;
+				concept.synonyms = [];
+			});
+
+			$('#sqlelementlist,#sqlrelatedconcepts').on('click', 'a', function () {
+				let current_sql_string = $("#sqlstrings").find("div.active").find("textarea").val();
+				let new_sql_string = current_sql_string + ' ' + $(this).text();
+				$("#sqlstrings").find("div.active").find("textarea").val(new_sql_string);
+			});
+
+			$('#localconceptfinderalerts').on('click', '#setsynonymsallbutton', function () {
+				conceptList.filter(concept => concept.synonyms_retrieved == false && concept.type != 'schema').
+					forEach(function (concept) {
+						concept.set_synonyms();
+					});
+				$('#localconceptfinderalerts').empty();
+			})
+
+			$('#conceptlistalerts').on('click', '#setsynonymsallbutton', function () {
+				conceptList.filter(concept => concept.synonyms_retrieved == false && concept.type != 'schema').
+					forEach(function (concept) {
+						concept.set_synonyms();
+					});
+				$('#conceptlistalerts').empty();
+			})
+
+			$('#modalsavetransformation').on('click', function () {
+				let global_concept = concept_id_to_concept($('#conceptid').val());
+				global_concept.transformation1 = $("#textareatransform1").val();
+				global_concept.transformation2 = $("#textareatransform2").val();
+			});
+
+			//NEW CANONICAL CONCEPT EVENTS
+			$("#newglobaltableconcept").click(function () {
+				$.fn.addGlobalTableConcept();
+			});
+			$("#newglobalattributeconcept").click(function () {
+				$.fn.addGlobalAttributeConcept();
+			});
+
+			// FILTER EVENTS
+			$("#tablesfilter").click(function () {
+				if (this.checked == true) {
+					conceptList.filter(concept => concept.type === "table").
+						forEach(conceptObj => conceptObj.get_drawn_concept().classed("invisible", false));
+					d3.selectAll(".tabtoattr").classed("invisible", false);
+				} else {
+					conceptList.filter(concept => concept.type === "table").
+						forEach(conceptObj => conceptObj.get_drawn_concept().classed("invisible", true));
+					d3.selectAll(".tabtoattr").classed("invisible", true);
+				}
+			});
+
+			$("#attributesfilter").click(function () {
+				if (this.checked == true) {
+					conceptList.filter(concept => concept.type === "attribute")
+						.forEach(conceptObj => conceptObj.get_drawn_concept().classed("invisible", false));
+					d3.selectAll(".tabtoattr").classed("invisible", false);
+				} else {
+					conceptList.filter(concept => concept.type === "attribute")
+						.forEach(conceptObj => conceptObj.get_drawn_concept().classed("invisible", true));
+					d3.selectAll(".tabtoattr").classed("invisible", true);
+				}
+			});
+
+			$("#tabtoattrfilter").click(function () {
+				if (this.checked == true) {
+					d3.selectAll(".tabtoattr").classed("invisible", false);
+				} else {
+					d3.selectAll(".tabtoattr").classed("invisible", true);
+				}
+			});
+
+			$("#globaltolocalfilter").click(function () {
+				if (this.checked == true) {
+					d3.selectAll(".globaltolocal").classed("invisible", false);
+				} else {
+					d3.selectAll(".globaltolocal").classed("invisible", true);
+				}
+			});
+
+			$.fn.push_alert = function (alertdivid, type, text, additionalbuttonid, additionalbuttontype, additionalbuttontext) {
+				//types = primary , secondary , success , danger , warning , info , light , dark
+				let alertStart = "<div id='alertchooseglobaltable' class='alert alert-" + type + " alert-dismissible fade show' role='alert'>";
+				let additionalbutton = '';
+				if (additionalbuttonid !== undefined) {
+					additionalbutton = "<div class='d-flex justify-content-end'><button id='" + additionalbuttonid + "' type='button' class='btn-" + additionalbuttontype + "'>" + additionalbuttontext + "</button></div>";
+				}
+				let closeBtn = "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>";
+				$('#' + alertdivid).append(alertStart + text + closeBtn + additionalbutton + '</div>');
+			};
+		});
+	</script>
+
+	<!-- Quality Assurance -->
+	<script>
+		var delay = (function () {
+			var timer = 0;
+			return function (callback, ms) {
+				clearTimeout(timer);
+				timer = setTimeout(callback, ms);
+			};
+		})();
+
+		delay(function () {
+			//$('#insertschema').trigger('click'); //automatic quality test
+			//$('#importDDL').trigger('click'); //automatic quality test
+			//$('#insertSchemaModal .btn-close').trigger('click');
+		}, 555); // end delay
+	</script>
+
+	<!-- Icons -->
+	<script src="https://unpkg.com/feather-icons"></script>
+	<script>
+		feather.replace()
+	</script>
+
+	<!-- Graphs -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+
+	<!-- Fuse.js-->
+	<script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
+
+</body>
+
+</html>
