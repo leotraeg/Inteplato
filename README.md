@@ -1,2 +1,2 @@
 # Inteplato
-Inteplato is a web-based tool for "Machine Learning supported Integration of heterogeneous Database Eco-Systems"
+Inteplato is a web-based tool for "Generating Mappings of Heterogeneous Relational Schemas using Unsupervised Learning"
