@@ -6,3 +6,4 @@ Download the .mp4 Inteplato Demo (length 5 min) to understand the functionalitie
 
 # Application
 Go to: https://leotraeg.github.io/Inteplato/
+To use synonym feature, generate individual WordApi key and change key string in function set_synonyms in conceptConstructor.js file
