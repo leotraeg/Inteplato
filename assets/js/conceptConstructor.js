@@ -348,7 +348,7 @@ function concept(concept_name, parent_concept_id, data_type) {
                 "url": "https://wordsapiv1.p.rapidapi.com/words/" + conceptName + "/synonyms",
                 "method": "GET",
                 "headers": {
-                    "x-rapidapi-key": "ae8e2c7884msh6a0c32b120b6dcdp159ea6jsn4c219d367fc6",
+                    "x-rapidapi-key": "generateOwnRapidAPIkeyToUseSynonymFeature",
                     "x-rapidapi-host": "wordsapiv1.p.rapidapi.com"
                 },
             };

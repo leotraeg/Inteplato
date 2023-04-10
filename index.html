@@ -137,24 +137,6 @@
 					<h1 class="h2">Dashboard</h1>
 					<div class="btn-toolbar mb-2 mb-md-0">
 						<div class="btn-group mr-2">
-							<button id="info" class="btn btn-sm btn-outline-secondary">
-								Info
-								<span data-feather="info"></span>
-							</button>
-						</div>
-						<div class="btn-group mr-2">
-							<button class="btn btn-sm btn-outline-secondary">
-								Save
-								<span data-feather="save"></span>
-							</button>
-						</div>
-						<div class="btn-group mr-2">
-							<button class="btn btn-sm btn-outline-secondary">
-								Options
-								<span data-feather="tool"></span>
-							</button>
-						</div>
-						<div class="btn-group mr-2">
 							<button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
 								data-bs-target="#previewConceptList">
 								Concept List
@@ -650,11 +632,11 @@
 
 				//QS Auto fill schemas
 				switch (schemaCounter) {
-					case 1: $("#modalSchema1").empty(); $("#modalSchema1").val(SampleXMLOracleCO); $('#formatSchemaModel1').find(":selected").val("XMLOracle");
+					//case 1: $("#modalSchema1").empty(); $("#modalSchema1").val(SampleXMLOracleCO); $('#formatSchemaModel1').find(":selected").val("XMLOracle");
+						//break;
+					case 1: $("#modalSchema1").empty(); $("#modalSchema2").val(SampleDDLMySQL); $('#formatSchemaModel1').find(":selected").val("DDLMySQL");
 						break;
-					case 2: $("#modalSchema2").empty(); $("#modalSchema2").val(SampleDDLMySQL); $('#formatSchemaModel2').find(":selected").val("DDLMySQL");
-						break;
-					case 3: $("#modalSchema3").empty(); $("#modalSchema3").val(SampleXMLSAP); $('#formatSchemaModel3').find(":selected").val("XMLOracle");
+					case 2: $("#modalSchema2").empty(); $("#modalSchema3").val(SampleXMLSAP); $('#formatSchemaModel2').find(":selected").val("XMLOracle");
 						break;
 				}
 			});
@@ -1113,7 +1095,7 @@
 			//MODAL EVENTS
 			$("#insertschema").click(function () {
 				$("#modalSchemaGlobal").empty(); //automatic quality test
-				$("#modalSchemaGlobal").val(SampleXMLOracleHR); //automatic quality test
+				$("#modalSchemaGlobal").val(SampleXMLOracleCO); //automatic quality test
 			});
 
 			$("#clearschema").click(function () {
