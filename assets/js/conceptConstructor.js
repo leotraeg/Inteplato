@@ -197,12 +197,11 @@ let schema_count = 0;
 var conceptList = []; //Concept Object List
 
 // Constructor for concepts
-function concept(concept_name, parent_concept_name, data_type) {
+function concept(concept_name, parent_concept_id, data_type) {
     concept_id_index = concept_id_index + 1;
-    let parent_id;
     let schema;
 
-    if (parent_concept_name === undefined) { // --> it is a schema-concept
+    if (parent_concept_id === undefined) { // --> it is a schema-concept
         type = 'schema';
         if (concept_name === 'global') { this.color = $("#colorpickerglobalconcept").css("color") }
         else {
@@ -210,18 +209,18 @@ function concept(concept_name, parent_concept_name, data_type) {
             this.color = $("#colorpickermodal" + schema_count).css("color");
         };
     } else { // --> it has a parent-concept
-        let parent_concept = conceptList.find(concept => concept.name === parent_concept_name);
-        parent_id = parent_concept.id;
+        let parent_concept = conceptList.find(concept => concept.id === parent_concept_id);
+        //parent_id = parent_concept.id;
         type = (parent_concept.type == 'schema') ? 'table' : 'attribute';
         schema = (type === 'table') ? parent_concept.name : parent_concept.get_parent_concept().name;
-        if (schema === 'global') { this.transformation1 = ''; this.transformation2 = ''; }
+        if (schema === 'global') { this.transformation1 = ''; this.transformation2 = ''; this.transformation3 = ''; }
     }
 
     this.id = 'CONCEPT_' + concept_id_index;
     this.name = (concept_name.includes("Global") || concept_name.includes("Global")) ? this.id + '_' + concept_name : concept_name;
-    this.manipulated_name = this.name;
-    this.parent_id = parent_id;
-    this.parent_name = parent_concept_name;
+    this.refined_local_name = this.name;
+    this.parent_id = parent_concept_id;
+    this.parent_name = (parent_concept_id === undefined) ? '' : concept_id_to_concept(parent_concept_id).name;
     this.type = type;
     this.schema = schema;
     this.data_type = data_type;
@@ -233,9 +232,40 @@ function concept(concept_name, parent_concept_name, data_type) {
     this.synonyms_retrieved = false;
     this.synonyms = [];
 
+    //vector hot encoding representation meta
+    this.vec_type_schema = this.type == 'schema' ? 1 : 0;
+    this.vec_type_table = this.type == 'table' ? 1 : 0;
+    this.vec_type_attribute = this.type == 'attribute' ? 1 : 0;
+    //this.vec_schema_global = 0;
+    //this.vec_schema_local = 0;
+
+    //vector hot encoding representation data type
+    this.vec_datatype_numeric = is_datatype_numeric(this.data_type);
+    //this.vec_datatype_numericfloat = this.data_type.includes("FLOAT")? 1:0;
+    this.vec_datatype_text = is_datatype_text(this.data_type);
+    this.vec_datatype_date = is_datatype_date(this.data_type);
+    this.vec_datatype_miscellaneous = is_datatype_miscellaneous(this.data_type);
+
+    //vector hot encoding representation constraint
+    this.vec_constraint_pk = 0;
+    this.vec_constraint_fk = 0;
+    this.vec_constraint_fkref = 0;
+    this.vec_constraint_notnull = 0;
+    this.vec_constraint_default = 0;
+    this.vec_constraint_unique = 0;
+    this.vec_constaint_check = 0;
+
     this.set_constraint = function (constraint, constraint_ref_concept_id) {
         this.constraint_name = constraint;
         this.constraint_ref_id = constraint_ref_concept_id;
+
+        //vector hot encoding representation constraint
+        this.vec_constraint_pk = constraint.includes("PRIMARY KEY") ? 1 : 0;
+        this.vec_constraint_fk = constraint.includes("FOREIGN KEY") ? 1 : 0;
+        this.vec_constraint_notnull = constraint.includes("NOT NULL") ? 1 : 0;
+        this.vec_constraint_default = constraint.includes("DEFAULT") ? 1 : 0;
+        this.vec_constraint_unique = constraint.includes("UNIQUE") ? 1 : 0;
+        this.vec_constaint_check = constraint.includes("CHECK") ? 1 : 0;
     };
 
     this.set_global_concept = function (global_concept_id) {
@@ -247,6 +277,8 @@ function concept(concept_name, parent_concept_name, data_type) {
             global_concept.transformation1 = this.name;
         } else if (global_concept.transformation2 === '' && this.schema === 'SCHEMA2') {
             global_concept.transformation2 = this.name;
+        } else if (global_concept.transformation3 === '' && this.schema === 'SCHEMA3') {
+            global_concept.transformation3 = this.name;
         }
 
         //draw path between global to local concept if both are drawn
@@ -268,29 +300,46 @@ function concept(concept_name, parent_concept_name, data_type) {
         }
     }
 
+    this.remove_global_concept = function (global_concept_id) {
+        global_concept = concept_id_to_concept(global_concept_id);
+
+        //remove global concept id from local concept global_id array
+        var index = this.global_id.indexOf(global_concept.id);
+        if (index !== -1) { this.global_id.splice(index, 1); };
+
+        //remove svg path
+        d3.select("#" + global_concept.id + "pathTo" + this.id).remove();
+
+        //refresh concept detail view 
+        global_concept.update_conceptmeta();
+    }
+
     this.set_draw = function (bool) {
         this.draw = bool;
     }
 
     // Exclude hardcoded some string elements hindering to retrieve synonyms
     this.modify_concept_name = function () {
-        let new_name = this.manipulated_name;
+        let new_name = this.refined_local_name;
         //if(this.schema === 'Schema1'){
+        new_name = new_name.replaceAll("STS_DIM","");
+        new_name = new_name.replaceAll("STS_FCT","");
         new_name = new_name.replace("DB1_ORDERINGDB_", "");
         new_name = new_name.replace("DB1_", "");
         new_name = new_name.replace("DB4_", "");
-        new_name = new_name.replaceAll("_", " ");
+        new_name = new_name.replaceAll("_", " ")
+        
         //} else if (this.schema === 'Schema2'){
         //    new_name = new_name.replace("", "");
         //};
-        this.manipulated_name = new_name;
+        this.refined_local_name = new_name;
         return new_name;
     }
 
     this.set_synonyms = function () {
         let concept = this;
         concept.modify_concept_name();
-        let conceptNames = concept.manipulated_name.split(" ");
+        let conceptNames = concept.refined_local_name.split(" ");
 
         conceptNames.forEach(function (conceptName) {
             const settings = {
@@ -316,8 +365,8 @@ function concept(concept_name, parent_concept_name, data_type) {
             });
         });
 
-        concept.synonyms.push(concept.manipulated_name.toUpperCase());
-        //concept.synonyms = concept.synonyms.concat(concept.manipulated_name.toLowerCase());
+        concept.synonyms.push(concept.refined_local_name.toUpperCase());
+        //concept.synonyms = concept.synonyms.concat(concept.refined_local_name.toLowerCase());
 
         return true;
     }
@@ -373,7 +422,7 @@ function concept(concept_name, parent_concept_name, data_type) {
                 let conceptJson = new Object();
                 conceptJson.id = concept.id;
                 conceptJson.name = concept.name;
-                conceptJson.manipulated_name = concept.modify_concept_name();
+                conceptJson.refined_local_name = concept.modify_concept_name();
                 conceptListJson.push(conceptJson);
             });
         //console.log(conceptListJson);
@@ -523,14 +572,14 @@ function concept(concept_name, parent_concept_name, data_type) {
             // ignoreLocation: false,
             // ignoreFieldNorm: false,
             keys: [
-                "manipulated_name"
+                "refined_local_name"
             ]
         };
         const fuse = new Fuse(this.conceptList_to_JSON(), options);
 
         //transform JSON into Array
         var fuzzy_result = [];
-        let fuzzy_result_JSON = fuse.search(this.manipulated_name);
+        let fuzzy_result_JSON = fuse.search(this.refined_local_name);
 
         for (let i = 0; i < fuzzy_result_JSON.length; i++) {
             fuzzy_result.push({ id: fuzzy_result_JSON[i].item.id, fuzzy_score: round10((1 - fuzzy_result_JSON[i].score), -4) });
@@ -670,7 +719,7 @@ function concept(concept_name, parent_concept_name, data_type) {
         if (this.type === 'attribute') {
             console.log('Can not add child concept of attribute')
         } else {
-            new_child = new concept(child_concept_name, this.name, attr_data_type);
+            new_child = new concept(child_concept_name, this.id, attr_data_type);
             return new_child;
         };
     }
@@ -712,12 +761,17 @@ function concept(concept_name, parent_concept_name, data_type) {
             // find and list concepts connected with global concept
             $("#globalrel1").empty();
             $("#globalrel2").empty();
+            $("#globalrel3").empty();
 
             conceptList.filter(conceptsConnected => conceptsConnected.global_id.includes(this.id) && conceptsConnected.schema === 'SCHEMA1').
-                forEach(conceptObj => $("#globalrel1").append('<li class="list-group-item">' + conceptObj.name + '</li>'));
+                forEach(conceptObj => $("#globalrel1").append('<li class="list-group-item"><span class="name">' + conceptObj.name + '</span><button type="button" class="removeglobalconceptbtn btn-close float-end" data-conceptid="' + conceptObj.id + '" aria-label="Close"></button></li>'));
 
             conceptList.filter(conceptsConnected => conceptsConnected.global_id.includes(this.id) && conceptsConnected.schema === 'SCHEMA2').
-                forEach(conceptObj => $("#globalrel2").append('<li class="list-group-item">' + conceptObj.name + '</li>'));
+                forEach(conceptObj => $("#globalrel2").append('<li class="list-group-item"><span class="name">' + conceptObj.name + '</span><button type="button" class="removeglobalconceptbtn btn-close float-end" data-conceptid="' + conceptObj.id + '" aria-label="Close"></button></li>'));
+
+            conceptList.filter(conceptsConnected => conceptsConnected.global_id.includes(this.id) && conceptsConnected.schema === 'SCHEMA3').
+                forEach(conceptObj => $("#globalrel3").append('<li class="list-group-item"><span class="name">' + conceptObj.name + '</span><button type="button" class="removeglobalconceptbtn btn-close float-end" data-conceptid="' + conceptObj.id + '" aria-label="Close"></button></li>'));
+
 
             if (this.type === "attribute") {
                 $("#conceptdatatype").prop("disabled", false);
@@ -748,6 +802,11 @@ function concept(concept_name, parent_concept_name, data_type) {
     };
 
     this.draw_concept = function (iv_svg) {
+        let fontWeight = 400;
+        let fontStyle = "normal";
+        let strokeWidth = 2; //latex
+        if (this.schema === 'global') { strokeWidth = 5; }; //latex
+
         if (this.type === 'schema') { return; }
         else if (this.type === 'table') {
             //position of table
@@ -761,14 +820,16 @@ function concept(concept_name, parent_concept_name, data_type) {
             var positionXY = newColumnConceptPosition([parentPositionX, parentPositionY]);
 
             if (this.constraint_name === 'PRIMARY KEY') {
-                var color = "#D4AC0D";
+                //color = "#D4AC0D"; //latex
+                fontWeight = 900;
             }
             else if (this.constraint_name === 'FOREIGN KEY') {
-                var color = "#5D6D7E";
+                //color = "#5D6D7E"; //latex
+                fontStyle = "italic";
             }
-            else {
-                var color = pSBC(0.3, this.get_schema_concept().color);
-            }
+            //else { //latex
+            color = pSBC(0.3, this.get_schema_concept().color);
+            //} //latex
             //predraw path to parent
             svg.append("path")
                 .attr("id", this.parent_id + "pathTo" + this.id)
@@ -792,7 +853,7 @@ function concept(concept_name, parent_concept_name, data_type) {
                 .attr("width", "200")
                 .attr("height", "50")
                 .attr("fill", color)
-                .attr("stroke-width", "2")
+                .attr("stroke-width", strokeWidth)
                 .attr("stroke", "#000000")
                 .attr("rx", "20")
                 .attr("ry", "20");
@@ -802,7 +863,7 @@ function concept(concept_name, parent_concept_name, data_type) {
                 .attr("width", "200")
                 .attr("height", "50")
                 .attr("fill", color)
-                .attr("stroke-width", "2")
+                .attr("stroke-width", strokeWidth)
                 .attr("stroke", "#000000");
         };
 
@@ -812,6 +873,8 @@ function concept(concept_name, parent_concept_name, data_type) {
             .attr("dx", "100")
             .attr("font-family", "Verdana")
             .attr("font-size", "12")
+            .attr("font-style", fontStyle)
+            .attr("font-weight", fontWeight)
             .attr("fill", "white")
             .attr("rx", "20")
             .attr("rx", "20")
@@ -936,12 +999,9 @@ const bindGOnClickHandler = function (elem) {
                 .attr("data-pathstart", "NULL");
 
             newPathMouseMoved = false;
-
-
         }
     });
 };
-
 
 // conceptG drag event
 var dragHandler = d3.drag()

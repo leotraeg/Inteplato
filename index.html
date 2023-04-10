@@ -155,9 +155,17 @@
 							</button>
 						</div>
 						<div class="btn-group mr-2">
-							<button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"data-bs-target="#previewConceptList">
+							<button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+								data-bs-target="#previewConceptList">
 								Concept List
 								<span data-feather="eye"></span>
+							</button>
+						</div>
+						<div class="btn-group mr-2">
+							<button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+								data-bs-target="#previewConceptListHotEnc">
+								CL HotEnc
+								<span data-feather="list"></span>
 							</button>
 						</div>
 						<div class="btn-group mr-2">
@@ -190,43 +198,27 @@
 							<div class="modal-body">
 								<div role="tabpanel">
 									<ul class="nav nav-tabs" id="myTab" role="tablist">
-										<li class="nav-item" role="presentation">
-											<button class="nav-link active" id="xml1" data-bs-toggle="tab"
-												data-bs-target="#xml1tar" type="button" role="tab"
-												aria-controls="xml1tar" aria-selected="true">Local schema 1</button>
+										<li class="nav-item">
+											<button class="nav-link" id="addSchemaModal" type="button"
+												role="tab">+</button>
 										</li>
 										<li class="nav-item" role="presentation">
-											<button class="nav-link" id="xml2" data-bs-toggle="tab"
-												data-bs-target="#xml2tar" type="button" role="tab"
-												aria-controls="xml2tar" aria-selected="false">Local schema 2</button>
-										</li>
-										<li class="nav-item" role="presentation">
-											<button class="nav-link" id="global" data-bs-toggle="tab"
+											<button class="nav-link active" id="global" data-bs-toggle="tab"
 												data-bs-target="#globaltar" type="button" role="tab"
-												aria-controls="globaltar" aria-selected="false">Global schema</button>
+												aria-controls="globaltar" aria-selected="true">Global schema</button>
 										</li>
 									</ul>
 									<div class="tab-content" id="myTabContent">
-										<div class="tab-pane fade show active" id="xml1tar" role="tabpanel"
-											aria-labelledby="xml1">
-											<div class="form-floating">
-												<div class="picker" id="colorpickermodal1"></div>
-												<textarea class="form-control" id="modalschema1"
-													style="height: 500px"></textarea>
-											</div>
-										</div>
-										<div class="tab-pane fade" id="xml2tar" role="tabpanel" aria-labelledby="xml2">
-											<div class="form-floating">
-												<div class="picker" id="colorpickermodal2"></div>
-												<textarea class="form-control" id="modalschema2"
-													style="height: 500px"></textarea>
-											</div>
-										</div>
 										<div class="tab-pane fade" id="globaltar" role="tabpanel"
 											aria-labelledby="global">
 											<div class="form-floating">
 												Choose color on main screen
-												<textarea class="form-control" id="modalschemaglobal"
+												<select class="form-select form-select-sm" id='formatSchemaModelGlobal'>
+													<option>Select data format</option>
+													<option value="DDLMySQL">DDLMySQL</option>
+													<option value="XMLOracle" selected>XMLOracle</option>
+												</select>
+												<textarea class="form-control" id="modalSchemaGlobal"
 													style="height: 500px"></textarea>
 											</div>
 										</div>
@@ -235,7 +227,8 @@
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary"
 										data-bs-dismiss="modal">Close</button>
-									<button id="importDDL" type="button" class="btn btn-primary">Import XML-DDLs into Concept List</button>
+									<button id="importAllSchemaFormats" type="button" class="btn btn-primary">Import all
+										schema formats into Concept List</button>
 								</div>
 							</div>
 						</div>
@@ -243,7 +236,8 @@
 				</div>
 
 				<!-- MODAL preview Concept List .modal-fullscreen -->
-				<div class="modal fade" id="previewConceptList" tabindex="-1" aria-labelledby="modalconceptlist" aria-hidden="true">
+				<div class="modal fade" id="previewConceptList" tabindex="-1" aria-labelledby="modalconceptlist"
+					aria-hidden="true">
 					<div class="modal-dialog modal-xl modal-dialog-centered">
 						<div class="modal-content">
 							<div class="modal-header">
@@ -259,7 +253,7 @@
 											<th scope="col"></th>
 											<th scope="col">Id</th>
 											<th scope="col">Concept Name</th>
-											<th scope="col">Manipulated Name</th>
+											<th scope="col">Refined Name</th>
 											<th scope="col">Synonyms</th>
 											<th scope="col">Parent #</th>
 											<th scope="col">Type</th>
@@ -285,6 +279,56 @@
 					</div>
 				</div>
 
+				<!-- MODAL preview Concept List Hot Encoded .modal-fullscreen -->
+				<div class="modal fade" id="previewConceptListHotEnc" tabindex="-1"
+					aria-labelledby="modalConceptListHotEnc" aria-hidden="true">
+					<div class="modal-dialog modal-xl modal-dialog-centered">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modalConceptListHotEnc">Concept List Hot Encoded</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="Close"></button>
+							</div>
+							<div class="modal-body table-responsive">
+								<div id="conceptlistalertsHotEnc"></div>
+								<div>
+									<button id="CLHotEncCSVDownload" type="button" class="btn btn-primary">Download as
+										CSV</button>
+									<button type="button" class="btn btn-secondary"
+										data-bs-dismiss="modal">Close</button>
+								</div>
+								<table id="conceptListTableHotEnc" class="table table-striped table-hover table-sm ">
+									<thead>
+										<tr>
+											<th scope="col">id</th>
+											<th scope="col">refined_local_name</th>
+											<th scope="col">parent_id</th>
+											<th scope="col">schema</th>
+											<th scope="col">vec_type_schema</th>
+											<th scope="col">vec_type_table</th>
+											<th scope="col">vec_type_attribute</th>
+											<th scope="col">vec_datatype_numeric</th>
+											<th scope="col">vec_datatype_text</th>
+											<th scope="col">vec_datatype_date</th>
+											<th scope="col">vec_datatype_miscellaneous</th>
+											<th scope="col">vec_constraint_pk</th>
+											<th scope="col">vec_constraint_fk</th>
+											<th scope="col">constraint_ref_id</th>
+											<th scope="col">vec_constraint_notnull</th>
+											<th scope="col">vec_constraint_default</th>
+											<th scope="col">vec_constraint_unique</th>
+											<th scope="col">vec_constaint_check</th>
+											<th scope="col">global_id</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<!-- MODAL preview Concept List .modal-fullscreen -->
 				<div class="modal fade" id="previewMetadata" tabindex="-1" aria-labelledby="modalmetadata"
 					aria-hidden="true">
@@ -303,6 +347,7 @@
 											<th scope="col">Global Concept Name</th>
 											<th scope="col">Transformation rule for schema 1</th>
 											<th scope="col">Transformation rule for schema 2</th>
+											<th scope="col">Transformation rule for schema 3</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -431,9 +476,11 @@
 							<p class="h6 text-start">Local Schema 1</p>
 							<ul id="globalrel1" class="list-group"></ul>
 							</br>
-
 							<p class="h6">Local Schema 2</p>
 							<ul id="globalrel2" class="list-group"></ul>
+							</br>
+							<p class="h6">Local Schema 3</p>
+							<ul id="globalrel3" class="list-group"></ul>
 						</div>
 					</div>
 
@@ -461,6 +508,10 @@
 												data-bs-target="#transform-local-2" type="button" role="tab"
 												aria-controls="transform-local-2" aria-selected="false">Local Schema
 												2</button>
+											<button class="nav-link" id="tab-transform-local-3" data-bs-toggle="pill"
+												data-bs-target="#transform-local-3" type="button" role="tab"
+												aria-controls="transform-local-3" aria-selected="false">Local Schema
+												3</button>
 										</div>
 										<div class="tab-content flex-fill" id="sqlstrings">
 											<div class="tab-pane fade show active" id="transform-local-1"
@@ -471,6 +522,11 @@
 											<div class="tab-pane fade flex-fill" id="transform-local-2" role="tabpanel"
 												aria-labelledby="tab-transform-local-2">
 												<textarea id="textareatransform2" class="form-control"
+													style="height: 350px"></textarea>
+											</div>
+											<div class="tab-pane fade flex-fill" id="transform-local-3" role="tabpanel"
+												aria-labelledby="tab-transform-local3">
+												<textarea id="textareatransform3" class="form-control"
 													style="height: 350px"></textarea>
 											</div>
 										</div>
@@ -508,48 +564,106 @@
 	<script>
 		$(function () {
 			//MODAL and SAMPLE XML
-			var xml1;
-			$.get('./dboneschema.txt', function (data) {
-				xml1 = data;
-			});
+			let xml1;
+			fetch('./dboneschema.txt')
+				.then(response => response.text())
+				.then((data) => {
+					xml1 = data;
+				});
 
-			var xml2;
-			$.get('./dbtwoschema.txt', function (data) {
-				xml2 = data;
-			});
+			//let xml2;
+			// fetch('./dbtwoschema.txt')
+			// 	.then(response => response.text())
+			// 	.then((data) => {
+			// 		xml2 = data;
+			// 	});
 
-			var xml4;
-			$.get('./dbfourschema.txt', function (data) {
-				xml4 = data;
-			});
+			let SampleDDLMySQL;
+			fetch('./mysqlschema4Inteplato.sql')
+				.then(response => response.text())
+				.then((data) => {
+					SampleDDLMySQL = data;
+				});
 
-			var xmlglobal;
-			$.get('./dbglobalschemac.txt', function (data) {
-				xmlglobal = data;
+			let SampleXMLSAP;
+			fetch('./sapschema4Inteplato.txt')
+				.then(response => response.text())
+				.then((data) => {
+					SampleXMLSAP = data;
+				});
+			
+			let SampleXMLOracleCO;
+			fetch('./oracleschemaCO4Inteplato.txt')
+				.then(response => response.text())
+				.then((data) => {
+					SampleXMLOracleCO = data;
+				});
+			
+			let SampleXMLOracleHR;
+			fetch('./oracleschemaHR4Inteplato.txt')
+				.then(response => response.text())
+				.then((data) => {
+					SampleXMLOracleHR = data;
+				});
+
+			let xml4;
+			fetch('./dbfourschema.txt')
+				.then(response => response.text())
+				.then((data) => {
+					xml4 = data;
+				});
+
+			let xmlglobal;
+			fetch('./dbglobalschemac.txt')
+				.then(response => response.text())
+				.then((data) => {
+					xmlglobal = data;
+				});
+
+
+
+			// ADD LOCAL SCHEMA dark red: #45150F darknormal red: #561A13 normal red: #A93226
+			let schemaColorPlate = ["#A93226", "#884EA0", "#2471A3", "#17A589", "#229954", "#CA6F1E"];
+			let numberOfLocalSchemas = [];
+			$('#addSchemaModal').on('click', function () {
+				numberOfLocalSchemas.push(numberOfLocalSchemas.length + 1);
+				let schemaCounter = numberOfLocalSchemas.length;
+				let newTab = "<li class='nav-item' role='presentation'><button class='nav-link' id='xml" + schemaCounter + "' data-bs-toggle='tab' data-bs-target='#xml" + schemaCounter + "tar' type='button' role='tab' aria-controls='#xml" + schemaCounter + "tar' aria-selected='false'>Local Schema " + schemaCounter + "</button></li>";
+				$("#myTab").append(newTab);
+
+				let newTabContent = "<div class='tab-pane fade' id='xml" + schemaCounter + "tar' role='tabpanel' aria-labelledby='xml" + schemaCounter + "'><div class='form-floating'><div class='picker' id='colorpickermodal" + schemaCounter + "'></div>";
+				let fileFormatSelection = "<select class='form-select form-select-sm' id='formatSchemaModel" + schemaCounter + "'><option>Select data format</option>";
+				fileFormats.forEach(function (fileFormat) {
+					fileFormatSelection = fileFormatSelection + "<option value='" + fileFormat + "'>" + fileFormat + "</option>"
+				})
+				let textInputArea = "</select><textarea class='form-control' id='modalSchema" + schemaCounter + "'style='height: 500px'></textarea></div>";
+				$("#myTabContent").append(newTabContent + fileFormatSelection + textInputArea);
+
+				$("#colorpickermodal" + schemaCounter).colorPick({
+					'initialColor': schemaColorPlate[schemaCounter],
+					'allowVertical': false,
+					'palette': schemaColorPlate,
+					'onColorSelected': function () {
+						this.element.css({ 'backgroundColor': this.color, 'color': this.color });
+					}
+				});
+
+				//QS Auto fill schemas
+				switch (schemaCounter) {
+					case 1: $("#modalSchema1").empty(); $("#modalSchema1").val(SampleXMLOracleCO); $('#formatSchemaModel1').find(":selected").val("XMLOracle");
+						break;
+					case 2: $("#modalSchema2").empty(); $("#modalSchema2").val(SampleDDLMySQL); $('#formatSchemaModel2').find(":selected").val("DDLMySQL");
+						break;
+					case 3: $("#modalSchema3").empty(); $("#modalSchema3").val(SampleXMLSAP); $('#formatSchemaModel3').find(":selected").val("XMLOracle");
+						break;
+				}
 			});
 
 			// COLOR PICKER
-			$("#colorpickermodal1").colorPick({
-				'initialColor': '#A93226',
-				'allowVertical': false,
-				'palette': ["#A93226", "#884EA0", "#2471A3", "#17A589", "#229954", "#CA6F1E"],
-				'onColorSelected': function () {
-					this.element.css({ 'backgroundColor': this.color, 'color': this.color });
-				}
-			});
-			$("#colorpickermodal2").colorPick({
-				'initialColor': '#229954',
-				'allowVertical': false,
-				'palette': ["#A93226", "#884EA0", "#2471A3", "#17A589", "#229954", "#CA6F1E"],
-				'onColorSelected': function () {
-					this.element.css({ 'backgroundColor': this.color, 'color': this.color });
-				}
-			});
-
 			$("#colorpickerglobalconcept").colorPick({
-				'initialColor': '#884EA0',
+				'initialColor': '#A93226',
 				'allowVertical': true,
-				'palette': ["#A93226", "#884EA0", "#2471A3", "#17A589", "#229954", "#CA6F1E"],
+				'palette': schemaColorPlate,
 				'onColorSelected': function () {
 					this.element.css({ 'backgroundColor': this.color, 'color': this.color });
 				}
@@ -560,7 +674,7 @@
 				var concept = concept_id_to_concept($('#conceptid').val());
 				concept.set_drawn_concept_text($('#conceptname').val().toUpperCase());
 				concept.name = $('#conceptname').val().toUpperCase();
-				concept.manipulated_name = $('#conceptname').val().toUpperCase();
+				concept.refined_local_name = $('#conceptname').val().toUpperCase();
 				concept.synonyms_retrieved = false;
 				concept.synonyms = [];
 			});
@@ -587,69 +701,120 @@
 				}
 			};
 
-			$.fn.XMLtoConceptList = function (inputXML, schemaName) {
+			let fileFormats = ['DDLMySQL', 'XMLOracle'];
+			$.fn.fileToConceptList = function (inputSchemaFile, schemaName, fileFormat) {
 				// check for existing schema
 				var concept_schema_obj = conceptList.find(concept => concept.name === schemaName);
-				if (concept_schema_obj === undefined) {
+				if (concept_schema_obj === undefined && fileFormat !== "Select data format") {
 					concept_schema_obj = new concept(schemaName);
 				};
 
-				//Parse the given XML
-				var xmlDoc = $.parseXML(inputXML);
-				var $xml = $(xmlDoc);
+				switch (fileFormat) {
+					case 'XMLOracle':
+						//Parse the given XML
+						var xmlDoc = $.parseXML(inputSchemaFile);
+						var $xml = $(xmlDoc);
 
-				// Find table 
-				var $table = $xml.find("TABLE");
+						// Find table 
+						var $table = $xml.find("TABLE");
 
-				// add tables and columns in a first step
-				$table.each(function () {
-					var table_name = $(this).find('NAME').first().text();
-					let table_concept = new concept(table_name, schemaName);
+						// add tables and columns in a first step
+						$table.each(function () {
+							var table_name = $(this).find('NAME').first().text();
+							let table_concept = new concept(table_name, concept_schema_obj.id);
 
-					var $attribute = $(this).find("COL_LIST").first().children("COL_LIST_ITEM");
+							var $attribute = $(this).find("COL_LIST").first().children("COL_LIST_ITEM");
 
-					$attribute.each(function () {
-						var attribute_name = $(this).find('NAME').first().text();
-						var attribute_data_type = $(this).find('DATATYPE').first().text();
-						table_concept.add_child_concept(attribute_name, attribute_data_type);
-					});
-				});
+							$attribute.each(function () {
+								var attribute_name = $(this).find('NAME').first().text();
+								var attribute_data_type = $(this).find('DATATYPE').first().text();
+								table_concept.add_child_concept(attribute_name, attribute_data_type);
+							});
+						});
 
-				// add constraints in a second step
-				$table.each(function () {
-					var table_name = $(this).find('NAME').first().text();
-					var $primarykey = $(this).find("PRIMARY_KEY_CONSTRAINT_LIST").first().children("PRIMARY_KEY_CONSTRAINT_LIST_ITEM");
+						// add constraints in a second step
+						$table.each(function () {
+							var table_name = $(this).find('NAME').first().text();
+							var $primarykey = $(this).find("PRIMARY_KEY_CONSTRAINT_LIST").first().children("PRIMARY_KEY_CONSTRAINT_LIST_ITEM");
 
-					$primarykey.each(function () {
-						var primarykey_name = $(this).find('COL_LIST').find('COL_LIST_ITEM').find('NAME').text();
-						conceptList.find(concept => concept.name === primarykey_name && concept.parent_name === table_name).
-							set_constraint('PRIMARY KEY');
-					});
-				});
+							$primarykey.each(function () {
+								var primarykey_name = $(this).find('COL_LIST').find('COL_LIST_ITEM').find('NAME').text();
+								conceptList.find(concept => concept.name === primarykey_name && concept.parent_name === table_name).
+									set_constraint('PRIMARY KEY');
+							});
+						});
 
-				$table.each(function () {
-					var table_name = $(this).find('NAME').first().text();
-					var $foreignkey = $(this).find("FOREIGN_KEY_CONSTRAINT_LIST").children("FOREIGN_KEY_CONSTRAINT_LIST_ITEM");
+						$table.each(function () {
+							var table_name = $(this).find('NAME').first().text();
+							var $foreignkey = $(this).find("FOREIGN_KEY_CONSTRAINT_LIST").children("FOREIGN_KEY_CONSTRAINT_LIST_ITEM");
 
-					$foreignkey.each(function () {
-						var foreignkey_name = $(this).find('COL_LIST').find('COL_LIST_ITEM').find('NAME').first().text();
-						var foreignkey_table_ref = $(this).find('REFERENCES').find('NAME').first().text();
-						var foreignkey_attribute_ref = $(this).find('REFERENCES').find('COL_LIST').find('COL_LIST_ITEM').find('NAME').text();
+							$foreignkey.each(function () {
+								var foreignkey_name = $(this).find('COL_LIST').find('COL_LIST_ITEM').find('NAME').first().text();
+								var foreignkey_table_ref = $(this).find('REFERENCES').find('NAME').first().text();
+								var foreignkey_attribute_ref = $(this).find('REFERENCES').find('COL_LIST').find('COL_LIST_ITEM').find('NAME').text();
 
-						//find in conceptList the primary and foreign key attribute concept
-						var foreignkey_concept = conceptList.find(concept => concept.name === foreignkey_name &&
-							concept.parent_name === table_name);
-						var primarykey_concept = conceptList.find(concept => concept.name === foreignkey_name &&
-							concept.constraint_name === 'PRIMARY KEY');
+								//find in conceptList the primary and foreign key attribute concept
+								var foreignkey_concept = conceptList.find(concept => concept.name === foreignkey_name &&
+									concept.parent_name === table_name);
+								var primarykey_concept = conceptList.find(concept => concept.name === foreignkey_name &&
+									concept.constraint_name === 'PRIMARY KEY');
 
-						if (foreignkey_concept != undefined && primarykey_concept != undefined) {
-							foreignkey_concept.set_constraint('FOREIGN KEY', primarykey_concept.id);
-						} else if (foreignkey_concept != undefined && primarykey_concept == undefined) {
-							foreignkey_concept.set_constraint('FOREIGN KEY', 'N/A');
+								if (foreignkey_concept != undefined && primarykey_concept != undefined) {
+									foreignkey_concept.set_constraint('FOREIGN KEY', primarykey_concept.id);
+								} else if (foreignkey_concept != undefined && primarykey_concept == undefined) {
+									foreignkey_concept.set_constraint('FOREIGN KEY', 'N/A');
+								};
+
+							});
+						});
+						break;
+					case 'DDLMySQL':
+						inputSchemaFile = inputSchemaFile.toUpperCase();
+						if (inputSchemaFile.includes("DROP TABLE IF EXISTS")) {
+							let prefix = "DROP TABLE IF EXISTS";
+							let suffix = ";";
+							const regex = new RegExp(prefix + ".*" + suffix, "ig"); //for letters [a-z]*
+							inputSchemaFile = inputSchemaFile.replaceAll(regex, '');
+						}
+
+						let tables = inputSchemaFile.split("CREATE TABLE ");
+
+						if (tables[0].indexOf("CREATE DATABASE") >= 0) {
+							tables.splice(0, 1);
 						};
 
-					});
-				});
+						tables.forEach(function (table) {
+							let table_name = table.substring(table.indexOf("'") + 1, table.indexOf("'", 2));
+							table = table.replace(" '" + table_name + "' (", '');
+							let table_concept = new concept(table_name, concept_schema_obj.id);
+
+							let tableRecords = table.split("\n");
+							tableRecords.splice(0, 1); //delete table name
+
+							console.log(tableRecords);
+							tableRecords.forEach(function (tableRecord) {
+								if (!tableRecord.includes("PRIMARY KEY") && !tableRecord.includes("KEY") && !tableRecord.includes("CONSTRAINT")) {
+									let attribute_name = tableRecord.substring(tableRecord.indexOf("'") + 1, tableRecord.lastIndexOf("'"));
+									if (!attribute_name == "") {
+										tableRecord = tableRecord.replace("  '" + attribute_name + "' ", '');
+
+										let attribute_data_type = tableRecord.substring(0, tableRecord.indexOf(" "));
+										if (attribute_data_type == '') {
+											attribute_data_type = tableRecord.substring(0, tableRecord.indexOf(","));
+										}
+										let attribute_concept = table_concept.add_child_concept(attribute_name, attribute_data_type);
+
+										tableRecord = tableRecord.replace(attribute_data_type + " ", '');
+										let attribute_constraint = tableRecord.substring(0, tableRecord.indexOf(","));
+										if (attribute_constraint != attribute_data_type) {
+											attribute_concept.set_constraint(attribute_constraint);
+										};
+									}
+								}
+							})
+						})
+						break;
+				}
 			};
 
 			//ON SHOW.BS.MODAL EVENTS
@@ -667,10 +832,23 @@
 				$.fn.generateConceptList();
 			});
 
+			$("#previewConceptListHotEnc").on('show.bs.modal', function () {
+				$('#conceptlistalertsHotEnc').empty();
+				let numberconceptswithoutsynonymsretrieved = conceptList.filter(concept => concept.synonyms_retrieved == false && concept.type != 'schema');
+				if (numberconceptswithoutsynonymsretrieved.length > 0) {
+					$.fn.push_alert('conceptlistalerts', 'warning', 'No synonyms were retrieved for ' + numberconceptswithoutsynonymsretrieved.length +
+						' concept(s). Do you want to retrieve synonyms for them? Inteplato could find more matches based on similiar synonyms.',
+						'setsynonymsallbutton', 'success', 'Retrieve synonyms');
+				};
+				conceptList.forEach(conceptObj => conceptObj.modify_concept_name()); //filter DB1_ ...
+				$.fn.generateConceptListHotEnc();
+			});
+
+
 			$.fn.generateConceptList = function () {
-				var tbody = $('#conceptListTable tbody'),
-					props = ["draw", "id", "name", "manipulated_name", "synonyms", "parent_id", "type",
-						"schema", "data_type", "constraint_name", "constraint_ref_id", "global_id"];
+				let tbody = $('#conceptListTable tbody');
+				let props = ["draw", "id", "name", "refined_local_name", "synonyms", "parent_id", "type",
+					"schema", "data_type", "constraint_name", "constraint_ref_id", "global_id"];
 
 				tbody.empty();
 
@@ -689,9 +867,9 @@
 							} else {
 								$('<td>').html(' ').appendTo(tr);
 							}
-						} else if (prop === "manipulated_name") {
+						} else if (prop === "refined_local_name") {
 							if (concept.type != 'schema') {
-								$('<td>').html("<input class='form-control form-control-sm conceptmannameinput' type='text' value='" + concept.manipulated_name +
+								$('<td>').html("<input class='form-control form-control-sm conceptmannameinput' type='text' value='" + concept.refined_local_name +
 									"' data-conceptid='" + concept.id + "'>").appendTo(tr);
 							} else {
 								$('<td>').html(' ').appendTo(tr);
@@ -717,6 +895,34 @@
 				feather.replace()
 			};
 
+			$.fn.generateConceptListHotEnc = function () {
+				let tbody = $('#conceptListTableHotEnc tbody');
+				let props = ["id", "refined_local_name", "parent_id", "schema",
+					//vector hot encoding representation meta
+					"vec_type_schema", "vec_type_table", "vec_type_attribute",
+					//vector hot encoding representation data type
+					"vec_datatype_numeric", "vec_datatype_text", "vec_datatype_date", "vec_datatype_miscellaneous",
+					//vector hot encoding representation constraint
+					"vec_constraint_pk", "vec_constraint_fk", "constraint_ref_id", "vec_constraint_notnull", "vec_constraint_default",
+					"vec_constraint_unique", "vec_constaint_check", "global_id"];
+
+				tbody.empty();
+
+				$.each(conceptList, function (i, concept) {
+					var tr = $('<tr>');
+					$.each(props, function (i, prop) {
+						$('<td>').html(concept[prop]).appendTo(tr);
+					});
+					tbody.append(tr);
+				});
+			};
+
+
+			// Concept List Hot Enc download as CSV
+			$("#CLHotEncCSVDownload").on('click', function () {
+				tableToCSV("conceptListTableHotEnc");
+			});
+
 			// Local Matcher algorithm
 			$("#localMatcher").on('click', function () {
 				let conceptsS = get_all_schemata_concepts();
@@ -728,7 +934,7 @@
 							filter(conceptSConceptsLT => conceptSConceptsLT.schema == conceptS.name);
 						let conceptLTMax = conceptGTmatrixconceptSConceptsLT[0] //total score sorted arr -> take first
 						let conceptLTMaxScnd = conceptGTmatrixconceptSConceptsLT[1]
-						if ((conceptLTMaxScnd.total_score / conceptLTMax.total_score) < 0.975) {
+						if ((conceptLTMaxScnd.total_score / conceptLTMax.total_score) < 0.99) {
 							concept_id_to_concept(conceptLTMax.id).set_global_concept(conceptGT.id);
 						} else {
 							console.log(conceptGT.id + ' has similarly scored local concepts. Human support required for ' + conceptS.name);
@@ -744,7 +950,7 @@
 									filter(conceptSConceptsLA => conceptSConceptsLA.schema == conceptS.name);
 								let conceptLAMax = conceptGAmatrixConceptSConceptsLA[0] //total score sorted arr -> take first 
 								let conceptLAMaxScnd = conceptGAmatrixConceptSConceptsLA[1]
-								if ((conceptLAMaxScnd.total_score / conceptLAMax.total_score) < 0.975) {
+								if ((conceptLAMaxScnd.total_score / conceptLAMax.total_score) < 0.99) {
 									concept_id_to_concept(conceptLAMax.id).set_global_concept(conceptGA.id);
 								} else {
 									console.log(conceptGA.id + ' has similarly scored local concepts. Human support required for ' + conceptS.name);
@@ -765,7 +971,7 @@
 
 			$.fn.generateMetadataTable = function () {
 				var tbody = $('#metadataTable tbody'),
-					props = ["id", "name", "transformation1", "transformation2"];
+					props = ["id", "name", "transformation1", "transformation2", "transformation3"];
 
 				tbody.empty();
 
@@ -784,6 +990,7 @@
 			$("#edittransformation").on('show.bs.modal', function () {
 				$("#textareatransform1").empty();
 				$("#textareatransform2").empty();
+				$("#textareatransform3").empty();
 				$("#edittransformationheader").empty();
 				$("#sqlelementlist").empty();
 				$("#sqlrelatedconcepts").empty();
@@ -793,6 +1000,7 @@
 
 				$("#textareatransform1").val(global_concept.transformation1);
 				$("#textareatransform2").val(global_concept.transformation2);
+				$("#textareatransform3").val(global_concept.transformation3);
 
 				conceptList.filter(conceptsConnected => conceptsConnected.global_id.includes(global_concept.id)).
 					forEach(sqlrelconcept => $("#sqlrelatedconcepts").append("<a href='#' class='list-group-item list-group-item-action'>" +
@@ -822,7 +1030,7 @@
 				let header = $('#localconceptfinderheader');
 				header.empty();
 				let headline = 'Mapping suggestions for global <b>' + global_concept.type + ' ' + global_concept.name + ' (' + global_concept.id + ')</b>:</br>';
-				let description = 'Retrieved Synonyms (' + global_concept.synonyms.length + ') for manipulated name <b>' + global_concept.manipulated_name + '</b> are <b>' + global_concept.synonyms + '</b></br>';
+				let description = 'Retrieved Synonyms (' + global_concept.synonyms.length + ') for refined name name <b>' + global_concept.refined_local_name + '</b> are <b>' + global_concept.synonyms + '</b></br>';
 				header.append(headline + description);
 
 				let thead = $('#localConceptFinderMatches thead');
@@ -834,14 +1042,16 @@
 				//table specific
 				if (global_concept.type == 'table') {
 					//content to be compared to for tables
-					props = ['id', 'name', 'manipulated_name', 'schema', 'synonyms', 'fuzzy search',  '#datatypes', 'tot score table', 'tot score attribute', 'tot score', 'set'];
+					props = ['id', 'name', 'refined_local_name', 'schema', 'synonyms', 'fuzzy search', '#datatypes', 'tot score table', 'tot score attribute', 'tot score', 'set'];
+					propsLatex = ['id', 'local_name', 'refined_local_name', 'schema', 'synonyms', 'fuzzy search', '#datatypes', 'tot score table', 'tot score attribute', 'tot score', 'set'];
 					//'#attributes', '#foreignkeys',
 					union = global_concept.tablelocalconceptfinder();
 
 				} // attribute specific
 				else if (global_concept.type == 'attribute') {
 					//content to be compared to for attributes
-					props = ['id', 'name', 'manipulated_name', 'schema', 'synonyms', 'fuzzy search', 'datatype', 'constraint', 'tot score attribute', 'tot score table', 'tot score', 'set'];
+					props = ['id', 'name', 'refined_local_name', 'schema', 'synonyms', 'fuzzy search', 'datatype', 'constraint', 'tot score attribute', 'tot score table', 'tot score', 'set'];
+					propsLatex = ['id', 'local_name', 'refined_local_name', 'schema', 'synonyms', 'fuzzy search', 'datatype', 'constraint', 'tot score attribute', 'tot score table', 'tot score', 'set'];
 
 					union = global_concept.attributelocalconceptfinder(true);
 				};
@@ -849,7 +1059,8 @@
 
 				//prepare dom table columns depending on concept being table or attribute
 				let informationColumns = '<tr>';
-				props.forEach(function (prop) {
+				//props.forEach(function (prop) { //LATEX
+				propsLatex.forEach(function (prop) {
 					informationColumns = informationColumns + '<th scope="col">' + prop + '</th>';
 				});
 				informationColumns = informationColumns + '</tr>';
@@ -901,22 +1112,21 @@
 
 			//MODAL EVENTS
 			$("#insertschema").click(function () {
-				//$("#modalschema1").empty(); //automatic quality test
-				//$("#modalschema1").val(xml1); //automatic quality test
-				//$("#modalschema2").empty(); //automatic quality test
-				//$("#modalschema2").val(xml4); //automatic quality test
-				//$("#modalschemaglobal").empty(); //automatic quality test
-				//$("#modalschemaglobal").val(xmlglobal); //automatic quality test
+				$("#modalSchemaGlobal").empty(); //automatic quality test
+				$("#modalSchemaGlobal").val(SampleXMLOracleHR); //automatic quality test
 			});
+
 			$("#clearschema").click(function () {
 				svg.selectAll('path').remove();
 				svg.selectAll('g').remove();
 			});
-			$("#importDDL").click(function () {
-				$.fn.XMLtoConceptList($("#modalschemaglobal").val(), "global");
-				$.fn.XMLtoConceptList($("#modalschema1").val(), "SCHEMA1");
-				$.fn.XMLtoConceptList($("#modalschema2").val(), "SCHEMA2");
-				
+
+			$("#importAllSchemaFormats").click(function () {
+				$.fn.fileToConceptList($("#modalSchemaGlobal").val(), "global", $("#formatSchemaModelGlobal").find(":selected").val());
+
+				numberOfLocalSchemas.forEach(function (schemaCounter) {
+					$.fn.fileToConceptList($("#modalSchema" + schemaCounter).val(), "SCHEMA" + schemaCounter, $("#formatSchemaModel" + schemaCounter).find(":selected").val());
+				});
 			});
 
 			$("#drawSelectedConcepts").click(function () {
@@ -962,9 +1172,15 @@
 				$(this).addClass('btn-outline-success');
 			});
 
+			$('#globalconceptmeta ul').on('click', 'button.removeglobalconceptbtn', function () {
+				let concept = concept_id_to_concept($(this).attr('data-conceptid'));
+				concept.remove_global_concept($('#conceptid').val());
+			});
+
+
 			$('#conceptListTable tbody').on('input', 'input.conceptmannameinput', function () {
 				let concept = concept_id_to_concept($(this).attr('data-conceptid'));
-				concept.manipulated_name = this.value;
+				concept.refined_local_name = this.value;
 				concept.synonyms_retrieved = false;
 				concept.synonyms = [];
 			});
@@ -995,6 +1211,7 @@
 				let global_concept = concept_id_to_concept($('#conceptid').val());
 				global_concept.transformation1 = $("#textareatransform1").val();
 				global_concept.transformation2 = $("#textareatransform2").val();
+				global_concept.transformation3 = $("#textareatransform3").val();
 			});
 
 			//NEW CANONICAL CONCEPT EVENTS
@@ -1056,10 +1273,12 @@
 				let closeBtn = "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>";
 				$('#' + alertdivid).append(alertStart + text + closeBtn + additionalbutton + '</div>');
 			};
+
+
 		});
 	</script>
 
-	<!-- Quality Assurance -->
+	<!-- Quality Assurance QS -->
 	<script>
 		var delay = (function () {
 			var timer = 0;
@@ -1070,8 +1289,11 @@
 		})();
 
 		delay(function () {
-			//$('#insertschema').trigger('click'); //automatic quality test
-			//$('#importDDL').trigger('click'); //automatic quality test
+			$('#addSchemaModal').trigger('click');
+			$('#addSchemaModal').trigger('click');
+			$('#addSchemaModal').trigger('click');
+			$('#insertschema').trigger('click');//automatic quality test
+			//$('#importAllSchemaFormats').trigger('click'); //automatic quality test
 			//$('#insertSchemaModal .btn-close').trigger('click');
 		}, 555); // end delay
 	</script>
